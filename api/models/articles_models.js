@@ -6,7 +6,7 @@ exports.selectArticleByID = (id) => {
                     WHERE article_id = $1;`;
   return db.query(queryStr, [id]).then(({ rows }) => {
     if (!rows.length) {
-      return Promise.reject({ status: 404, msg: "Not Found" });
+      return Promise.reject({ status: 404, msg: "Article not Found" });
     } else {
       return rows[0];
     }
@@ -20,7 +20,6 @@ exports.selectAllArticles = () => {
                     GROUP BY articles.article_id 
                     ORDER BY articles.created_at DESC;`;
   return db.query(queryStr).then(({ rows }) => {
-    console.log(rows)
     return rows;
   });
 };
