@@ -2,7 +2,9 @@ const { selectArticleByID } = require("../models/articles_models");
 const {
   selectCommentsByID,
   insertCommentByID,
+  removeCommentByID,
 } = require("../models/comments.models");
+const { checkCommentExists } = require("../utils");
 
 exports.getCommentsByID = (req, res, next) => {
   const { article_id } = req.params;
@@ -28,4 +30,16 @@ exports.postCommentByID = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(next);
+};
+
+exports.deleteCommentByID = (req, res, next) => {
+  const { comment_id } = req.params;
+  checkCommentExists(comment_id)
+    .then(() => {
+      return removeCommentByID(comment_id);
+    })
+    .then(() => {
+      res.status(204).send()
+    })
+    .catch(next)
 };

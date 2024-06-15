@@ -10,6 +10,7 @@ const {
 } = require("../db/data/test-data/index");
 const endPoints = require("../endpoints.json");
 const { string } = require("pg-format");
+const { checkCommentExists } = require("../api/utils");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -252,7 +253,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   test("404: responds with correct error when request body is has all elements but username not in db", () => {
     const requestBody = {
       body: "testBody",
-      username: "invalidUser"
+      username: "invalidUser",
     };
     return request(app)
       .post("/api/articles/1/comments")
@@ -270,5 +271,101 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Article not Found");
       });
-  })
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  const newVotes = { inc_votes: 20 };
+  test("200: updates article votes by article id and responds with updated article", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          votes: 20,
+        });
+      });
+  });
+  test("200: updates votes to 0 if decrements votes past 0", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -200 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.votes).toBe(0);
+      });
+  });
+  test("400: respons with correct error when supplied invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("400: responds with correct error when request body is invalid", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("404: responds with correct error when attempting to update non existant article", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article not Found");
+      });
+  });
+  test("400: responds with correct error when attempting to request body has incorrect data type", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "banana" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe.only("DELETE /api/comments/:comment_id", () => {
+  test("204: deletes comment by comment_id and responds with no content", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      })
+      
+  });
+  test("400: repsonds with correct error when supplied invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("404: repsonds with correct error when supplied valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not Found");
+      });
+  });
 });

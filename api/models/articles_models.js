@@ -23,3 +23,16 @@ exports.selectAllArticles = () => {
     return rows;
   });
 };
+
+exports.updateArticleByID = (id, votes) => {
+    const queryStr = `UPDATE articles
+                      SET votes = $1
+                      WHERE article_id = $2
+                      RETURNING *`;
+    const queryValues = [votes, id];
+    return db.query(queryStr, queryValues).then(({ rows }) => {
+      return rows[0];
+    });
+
+  }
+  
