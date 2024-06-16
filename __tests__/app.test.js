@@ -342,7 +342,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe.only("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("204: deletes comment by comment_id and responds with no content", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -369,3 +369,20 @@ describe.only("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+
+describe.only("GET /api/users", () => {
+  test("200: responds with array of all user objects", ()=>{
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then(({body :{users}}) => {
+      expect(users).toHaveLength(4)
+      users.forEach(user => {
+        expect(user).toHaveProperty("username")
+        expect(user).toHaveProperty("name")
+        expect(user).toHaveProperty("avatar_url")
+      })
+    })
+  })
+})
