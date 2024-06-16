@@ -107,7 +107,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   test("200: returns array of all articles", () => {
     return request(app)
       .get("/api/articles")
@@ -142,6 +142,33 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("200: accepts a topic query which filters articles by topic" ,() => {
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({body: {articles}}) => {
+      expect(articles).toHaveLength(12)
+      articles.forEach(article => {
+        expect(article.topic).toBe("mitch")
+      })
+    })
+  })
+  test("200: returns empty array with valid query but empty db" ,() => {
+    return request(app)
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then(({body: {articles}}) => {
+      expect(articles).toEqual([])
+    })
+  })
+  test("404: responds with correct error when invalid topic query " ,() => {
+    return request(app)
+    .get("/api/articles?topic=banana")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Resource not Found")
+    })
+  })
 });
 
 describe("GET /api/articles/:articled_id/comments", () => {
@@ -371,7 +398,7 @@ describe("DELETE /api/comments/:comment_id", () => {
 });
 
 
-describe.only("GET /api/users", () => {
+describe("GET /api/users", () => {
   test("200: responds with array of all user objects", ()=>{
     return request(app)
     .get("/api/users")
