@@ -59,7 +59,7 @@ describe("GET /api", () => {
   });
 });
 
-describe("GET /api/articles/:article_id", () => {
+describe.only("GET /api/articles/:article_id", () => {
   test("200: sends an article by its id", () => {
     const exampleRes = {
       article_id: 2,
@@ -105,9 +105,18 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  test("200: should include a count of all comments left of article", ()=>{
+    return request(app)
+    .get("/api/articles/9")
+    .expect(200)
+    .then(({body: {article}}) => {
+      expect(article.comment_count).toBe(2)
+    })
+  })
+
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: returns array of all articles", () => {
     return request(app)
       .get("/api/articles")

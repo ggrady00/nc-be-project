@@ -2,13 +2,17 @@ const db = require("../../db/connection");
 const { chechExists } = require("../utils");
 
 exports.selectArticleByID = (id) => {
-  const queryStr = `SELECT * 
-                    FROM articles 
-                    WHERE article_id = $1;`;
+  const queryStr = `SELECT a.*, count(comment_id)::INT AS comment_count 
+                    FROM articles a
+                    LEFT JOIN comments c
+                    ON a.article_id = c.article_id
+                    WHERE a.article_id = $1
+                    GROUP BY a.article_id;`;
   return db.query(queryStr, [id]).then(({ rows }) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not Found" });
     } else {
+      console.log(rows)
       return rows[0];
     }
   });
