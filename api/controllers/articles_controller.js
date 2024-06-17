@@ -15,14 +15,13 @@ exports.getArticleByID = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const {topic} = req.query;
-  const promises = [selectAllArticles(topic)]
+  const {topic, sort_by} = req.query;
+  const promises = [selectAllArticles(topic, sort_by)]
   if (topic) {
     promises.push(chechExists("topics", "slug", topic))
   }
   Promise.all(promises)
   .then(([articles])=>{
-    console.log(articles)
     res.status(200).send({ articles });
   })
   .catch(next)

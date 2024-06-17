@@ -59,7 +59,7 @@ describe("GET /api", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
   test("200: sends an article by its id", () => {
     const exampleRes = {
       article_id: 2,
@@ -105,18 +105,17 @@ describe.only("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
-  test("200: should include a count of all comments left of article", ()=>{
+  test("200: should include a count of all comments left of article", () => {
     return request(app)
-    .get("/api/articles/9")
-    .expect(200)
-    .then(({body: {article}}) => {
-      expect(article.comment_count).toBe(2)
-    })
-  })
-
+      .get("/api/articles/9")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.comment_count).toBe(2);
+      });
+  });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   test("200: returns array of all articles", () => {
     return request(app)
       .get("/api/articles")
@@ -151,33 +150,58 @@ describe("GET /api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("200: accepts a topic query which filters articles by topic" ,() => {
+  test("200: accepts a topic query which filters articles by topic", () => {
     return request(app)
-    .get("/api/articles?topic=mitch")
-    .expect(200)
-    .then(({body: {articles}}) => {
-      expect(articles).toHaveLength(12)
-      articles.forEach(article => {
-        expect(article.topic).toBe("mitch")
-      })
-    })
-  })
-  test("200: returns empty array with valid query but empty db" ,() => {
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toHaveLength(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("200: returns empty array with valid query but empty db", () => {
     return request(app)
-    .get("/api/articles?topic=paper")
-    .expect(200)
-    .then(({body: {articles}}) => {
-      expect(articles).toEqual([])
-    })
-  })
-  test("404: responds with correct error when invalid topic query " ,() => {
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
+      });
+  });
+  test("404: responds with correct error when invalid topic query ", () => {
     return request(app)
-    .get("/api/articles?topic=banana")
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("Resource not Found")
-    })
-  })
+      .get("/api/articles?topic=banana")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not Found");
+      });
+  });
+  describe("sorting queries", () => {
+    test("200: accepts sort_by query default descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+    });
+    test("200: accepts comment_count sort_by query default descending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("comment_count", {
+            descending: true,
+            coerce: true,
+          });
+        });
+    });
+    //add error testing
+  });
+  // test("200: accepts query order to define asc or desc" ,() => {
+
+  // })
 });
 
 describe("GET /api/articles/:articled_id/comments", () => {
@@ -385,8 +409,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
-      })
-      
+      });
   });
   test("400: repsonds with correct error when supplied invalid comment_id", () => {
     return request(app)
@@ -406,19 +429,18 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-
 describe("GET /api/users", () => {
-  test("200: responds with array of all user objects", ()=>{
+  test("200: responds with array of all user objects", () => {
     return request(app)
-    .get("/api/users")
-    .expect(200)
-    .then(({body :{users}}) => {
-      expect(users).toHaveLength(4)
-      users.forEach(user => {
-        expect(user).toHaveProperty("username")
-        expect(user).toHaveProperty("name")
-        expect(user).toHaveProperty("avatar_url")
-      })
-    })
-  })
-})
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+      });
+  });
+});

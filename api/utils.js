@@ -17,7 +17,6 @@ exports.checkCommentExists = (id) => {
 
 exports.chechExists = (table, column, value) => {
     const queryStr = format(`SELECT * FROM %I WHERE %I = $1;`, table, column)
-    console.log(queryStr, value)
     return db.query(queryStr, [value])
     .then(({rows}) => {
         if (!rows.length) {
