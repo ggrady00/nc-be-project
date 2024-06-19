@@ -41,11 +41,11 @@
       }
     }
   },
-  "GET /api/articles/:article_id/comments" : {
+  "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments of a single article",
-    "queries" : [],
-    "exampleResponse" : {
-      "comments" : [
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
         {
           "comment_id": 1,
           "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
@@ -65,63 +65,59 @@
       ]
     }
   },
-  "POST /api/articles/:article_id/comments" : {
+  "POST /api/articles/:article_id/comments": {
     "description": "inserts a comment of a single article into database and responds with comment",
-    "queries" : [],
-    "exampleRequestBody" : {
+    "queries": [],
+    "exampleRequestBody": {
       "username": "butter_bridge",
-      "body" : "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
     },
-    "exampleResponse" : {
-      "comment" : 
-        {
-          "comment_id": 1,
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "article_id": 19,
-          "author": "butter_bridge",
-          "votes": 0,
-          "created_at": "2020-04-06T12:17:00.000Z"
-        }
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 19,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
     }
   },
-  "PATCH /api/articles/:article_id" : {
+  "PATCH /api/articles/:article_id": {
     "description": "updates votes for an article by article_id",
-    "queries" : [],
-    "exampleRequestBody" : {
+    "queries": [],
+    "exampleRequestBody": {
       "inc_votes": 2
     },
-    "exampleResponse" : {
-      "comment" : 
-      {
+    "exampleResponse": {
+      "comment": {
         "article_id": 3,
         "title": "Eight pug gifs that remind me of mitch",
         "topic": "mitch",
         "author": "icellusedkars",
         "body": "some gifs",
         "created_at": "2020-11-03T09:12:00.000Z",
-        "article_img_url":
-          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         "votes": 2
       }
     }
   },
-  "DELETE /api/comments/:comment_id" : {
+  "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment by comment id",
-    "queries" : [],
-    "exampleRequestBody" : {},
-    "exampleResponse" : {}
+    "queries": [],
+    "exampleRequestBody": {},
+    "exampleResponse": {}
   },
-  "GET /api/users" : {
+  "GET /api/users": {
     "description": "serves an array of all users in database",
-    "queries" : [],
-    "exampleRequestBody" : {},
-    "exampleResponse" : {
+    "queries": [],
+    "exampleRequestBody": {},
+    "exampleResponse": {
       "users": [
         {
           "username": "butter_bridge",
           "name": "jonny",
-          "avatar_url":
-            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         },
         {
           "username": "icellusedkars",
@@ -129,6 +125,20 @@
           "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
         }
       ]
-  }
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves a user by username",
+    "queries": [],
+    "exampleRequestBody": {},
+    "exampleResponse": {
+      "users": {
+        "user": {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      }
+    }
   }
 }
