@@ -90,7 +90,7 @@
       "inc_votes": 2
     },
     "exampleResponse": {
-      "comment": {
+      "article": {
         "article_id": 3,
         "title": "Eight pug gifs that remind me of mitch",
         "topic": "mitch",
@@ -138,6 +138,22 @@
           "name": "jonny",
           "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         }
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates votes for an comment by commnet id",
+    "queries": [],
+    "exampleRequestBody": {
+      "inc_votes": 2
+    },
+    "exampleResponse": {
+      "comment": {
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 2,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "created_at": "2020-04-06T12:17:00.000Z"
       }
     }
   }

@@ -1,8 +1,10 @@
 const { selectArticleByID } = require("../models/articles_models");
 const {
-  selectCommentsByID,
+  selectCommentsByArticleID,
   insertCommentByID,
   removeCommentByID,
+  updateCommentByID,
+  selectCommentByID,
 } = require("../models/comments.models");
 const { checkCommentExists } = require("../utils");
 
@@ -11,7 +13,7 @@ exports.getCommentsByID = (req, res, next) => {
 
   selectArticleByID(article_id)
     .then(() => {
-      return selectCommentsByID(article_id);
+      return selectCommentsByArticleID(article_id);
     })
     .then((comments) => {
       res.status(200).send({ comments });
@@ -43,3 +45,21 @@ exports.deleteCommentByID = (req, res, next) => {
     })
     .catch(next)
 };
+
+exports.patchCommentByID = (req, res, next) => {
+  const {comment_id} = req.params
+  const {inc_votes} = req.body
+  selectCommentByID(comment_id)
+  .then((comment) => {
+    return +inc_votes + comment.votes
+  })
+  .then(votes => {
+    if (votes < 0) votes = 0
+    return updateCommentByID(votes, comment_id)
+  })
+  .then((comment) => {
+    res.status(200).send({comment})
+  })
+  .catch(next)
+
+}

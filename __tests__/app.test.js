@@ -197,40 +197,39 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("400: responds with correct error when passed invalid sort_by query" ,() => {
+    test("400: responds with correct error when passed invalid sort_by query", () => {
       return request(app)
         .get("/api/articles?sort_by=banana")
         .expect(400)
-        .then(({ body}) => {
-          expect(body.msg).toBe("Bad Request")
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
         });
-    })
-    test("200: accepts query order to define asc or desc" ,() => {
+    });
+    test("200: accepts query order to define asc or desc", () => {
       return request(app)
-      .get("/api/articles?order=asc")
-      .expect(200)
-      .then(({body : {articles}}) => {
-        expect(articles).toBeSortedBy("created_at")
-      })
-    })
-    test("200: accepts order and topic query " ,() => {
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    test("200: accepts order and topic query ", () => {
       return request(app)
-      .get("/api/articles?sort_by=votes&order=asc")
-      .expect(200)
-      .then(({body : {articles}}) => {
-        expect(articles).toBeSortedBy("votes")
-      })
-    })
-    test("400: responds with correct error when passed invalid order query" ,() => {
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSortedBy("votes");
+        });
+    });
+    test("400: responds with correct error when passed invalid order query", () => {
       return request(app)
         .get("/api/articles?order=banana")
         .expect(400)
-        .then(({ body}) => {
-          expect(body.msg).toBe("Bad Request")
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
         });
-    })
+    });
   });
-  
 });
 
 describe("GET /api/articles/:articled_id/comments", () => {
@@ -473,23 +472,89 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("GET /api/users/:username", ()=>{
-  test("200: returns user by username", ()=>{
+describe("GET /api/users/:username", () => {
+  test("200: returns user by username", () => {
     return request(app)
-    .get("/api/users/butter_bridge")
-    .expect(200)
-    .then(({body: {user}}) => {
-      expect(user.username).toBe("butter_bridge")
-      expect(user).toHaveProperty("avatar_url")
-      expect(user).toHaveProperty("name")
-    })
-  })
-  test("404: returns correct error when invalid username", ()=>{
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user.username).toBe("butter_bridge");
+        expect(user).toHaveProperty("avatar_url");
+        expect(user).toHaveProperty("name");
+      });
+  });
+  test("404: returns correct error when invalid username", () => {
     return request(app)
-    .get("/api/users/banana")
-    .expect(404)
-    .then(({body}) => {
-      expect(body.msg).toBe("User not Found")
-    })
+      .get("/api/users/banana")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not Found");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  const exampleRequest = { inc_votes: 20 };
+  test("200: updates votes on a comment by commnet id and responds with updated comment", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send(exampleRequest)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 36,
+          author: "butter_bridge",
+          article_id: 9,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("200: updates votes to 0 on a comment when decrement below 0", () => {
+    const exampleRequest = { inc_votes: -20 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(exampleRequest)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.votes).toBe(0)
+      });
+  });
+  test("400: responds with correct error when invalid comment_id", () => {
+    const exampleRequest = { inc_votes: 20 };
+    return request(app)
+      .patch("/api/comments/banana")
+      .send(exampleRequest)
+      .expect(400)
+      .then(({ body}) => {
+        expect(body.msg).toBe("Bad Request")
+      });
+  });
+  test("400: responds with correct error when request body is invalid", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("404: responds with correct error when attempting to update non existant comment id", () => {
+    return request(app)
+      .patch("/api/comments/999")
+      .send(exampleRequest)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not Found");
+      });
   })
-})
+  test("400: responds with correct error when request body has incorrect data type", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "banana" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
