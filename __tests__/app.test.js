@@ -115,7 +115,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: returns array of all articles", () => {
     return request(app)
       .get("/api/articles")
@@ -255,7 +255,6 @@ describe("GET /api/articles/:articled_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        console.log(comments);
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });

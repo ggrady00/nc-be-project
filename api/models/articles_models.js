@@ -13,7 +13,7 @@ exports.selectArticleByID = (id) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "Article not Found" });
     } else {
-      console.log(rows)
+
       return rows[0];
     }
   });
