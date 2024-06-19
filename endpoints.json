@@ -156,5 +156,29 @@
         "created_at": "2020-04-06T12:17:00.000Z"
       }
     }
+  },
+  "POST /api/articles": {
+    "description": "inserts a single article into database and responds with new article",
+    "queries": [],
+    "exampleRequestBody": {
+      "username": "butter_bridge",
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "topic": "paper",
+      "title": "new article",
+      "article_img_url" : "http://example.com" 
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 100,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 0
+      }
+    }
   }
 }

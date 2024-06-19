@@ -58,3 +58,17 @@ exports.updateArticleByID = (id, votes) => {
 
   }
   
+exports.insertArticle = (article) => {
+  if (!article.article_img_url) article.article_img_url = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+  const queryStr = `INSERT INTO articles (title, topic, author, body, article_img_url)
+                    VALUES ($1, $2, $3, $4, $5)
+                    RETURNING *`
+  const queryValues = [article.title, article.topic, article.author, article.body, article.article_img_url]
+  return db.query(queryStr, queryValues)
+  .then(({rows}) => {
+   return rows[0]
+  })
+  .then(article => {
+    return this.selectArticleByID(article.article_id)
+  })
+}

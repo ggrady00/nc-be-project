@@ -558,3 +558,93 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("POST /api/articles", ()=>{
+  test("201: responds with new article and adds to db", ()=>{
+    const newArticle = {
+      author: "lurker",
+      title : "new article",
+      body : "articles body",
+      topic : "paper",
+      article_img_url: "http://testurl.com"
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(201)
+    .then(({body: {article}}) => {
+      expect(article).toMatchObject(
+        {
+          author: "lurker",
+          title : "new article",
+          body : "articles body",
+          topic : "paper",
+          article_img_url: "http://testurl.com",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0
+        }
+      )
+    })
+  })
+  test("201: responds with deafult img_url when not provided", ()=>{
+    const newArticle = {
+      author: "lurker",
+      title : "new article",
+      body : "articles body",
+      topic : "paper"
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(201)
+    .then(({body: {article}}) => {
+      expect(article.article_img_url).toBe('https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700')
+    })
+  })
+  test("400: responds with correct error when body missing elements", ()=>{
+    const newArticle = {
+      author: "lurker",
+      title : "new article",
+      body : "articles body",
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+  test("404: responds with correct error when invalid username", ()=>{
+    const newArticle = {
+      author: "badUser",
+      title : "new article",
+      body : "articles body",
+      topic: "paper"
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Resource not Found")
+    })
+  })
+  test("404: responds with correct error when invalid topic", ()=>{
+    const newArticle = {
+      author: "lurker",
+      title : "new article",
+      body : "articles body",
+      topic: "badTopic"
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Resource not Found")
+    })
+  })
+})
