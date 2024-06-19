@@ -197,11 +197,40 @@ describe.only("GET /api/articles", () => {
           });
         });
     });
-    //add error testing
+    test("400: responds with correct error when passed invalid sort_by query" ,() => {
+      return request(app)
+        .get("/api/articles?sort_by=banana")
+        .expect(400)
+        .then(({ body}) => {
+          expect(body.msg).toBe("Bad Request")
+        });
+    })
+    test("200: accepts query order to define asc or desc" ,() => {
+      return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({body : {articles}}) => {
+        expect(articles).toBeSortedBy("created_at")
+      })
+    })
+    test("200: accepts order and topic query " ,() => {
+      return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then(({body : {articles}}) => {
+        expect(articles).toBeSortedBy("votes")
+      })
+    })
+    test("400: responds with correct error when passed invalid order query" ,() => {
+      return request(app)
+        .get("/api/articles?order=banana")
+        .expect(400)
+        .then(({ body}) => {
+          expect(body.msg).toBe("Bad Request")
+        });
+    })
   });
-  // test("200: accepts query order to define asc or desc" ,() => {
-
-  // })
+  
 });
 
 describe("GET /api/articles/:articled_id/comments", () => {

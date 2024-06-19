@@ -26,3 +26,12 @@ exports.chechExists = (table, column, value) => {
         }
     })
 }
+
+exports.checkQueries = (sort_by, order) => {
+    const sortBys = ["author", "title", "article_id", "topic", "created_at", "votes", "article_img_url", "comment_count"]
+    const orders = ["asc", "desc"]
+
+    if (!sortBys.includes(sort_by) || !orders.includes(order)) {
+        return Promise.reject({status: 400, msg: "Bad Request"})
+    }
+}

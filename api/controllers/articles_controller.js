@@ -3,7 +3,7 @@ const {
   selectAllArticles,
   updateArticleByID,
 } = require("../models/articles_models");
-const { chechExists } = require("../utils");
+const { chechExists, checkQueries } = require("../utils");
 
 exports.getArticleByID = (req, res, next) => {
   const { article_id } = req.params;
@@ -15,13 +15,22 @@ exports.getArticleByID = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const {topic, sort_by} = req.query;
-  const promises = [selectAllArticles(topic, sort_by)]
+  let {topic, sort_by, order} = req.query;
+
+  if (!sort_by) sort_by = "created_at"
+  if (!order) order = "desc"
+
+  const promises = [checkQueries(sort_by, order)]
+
   if (topic) {
     promises.push(chechExists("topics", "slug", topic))
   }
+  
   Promise.all(promises)
-  .then(([articles])=>{
+  .then(()=>{
+    return selectAllArticles(topic, sort_by, order)
+  })
+  .then((articles)=>{
     res.status(200).send({ articles });
   })
   .catch(next)

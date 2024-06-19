@@ -1,6 +1,6 @@
 const format = require("pg-format");
 const db = require("../../db/connection");
-const { chechExists } = require("../utils");
+const { chechExists, checkQueries } = require("../utils");
 
 exports.selectArticleByID = (id) => {
   const queryStr = `SELECT a.*, count(comment_id)::INT AS comment_count 
@@ -19,7 +19,8 @@ exports.selectArticleByID = (id) => {
   });
 };
 
-exports.selectAllArticles = (topic, sort_by) => {
+exports.selectAllArticles = (topic, sort_by, order) => {
+
   let queryValues = []
   let queryStr = `SELECT a.author, title, a.article_id, topic, a.created_at, a.votes, article_img_url, COUNT(c.comment_id) AS comment_count 
                     FROM articles a
@@ -28,15 +29,14 @@ exports.selectAllArticles = (topic, sort_by) => {
     queryStr += ` WHERE topic = %L`
     queryValues.push(topic)
   }
-  if (!sort_by) sort_by = "created_at"
   queryStr += ` GROUP BY a.article_id`
-  
   if (sort_by === "comment_count") {
-    queryStr +=  ` ORDER BY %I DESC;`;
+    queryStr +=  ` ORDER BY %I %s;`;
   } else {
-    queryStr +=  ` ORDER BY a.%I DESC;`;
+    queryStr +=  ` ORDER BY a.%I %s;`;
   }
   queryValues.push(sort_by)
+  queryValues.push(order)
 
   
 
