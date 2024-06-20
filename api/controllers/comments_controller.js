@@ -10,10 +10,13 @@ const { checkCommentExists } = require("../utils");
 
 exports.getCommentsByID = (req, res, next) => {
   const { article_id } = req.params;
+  let {limit, p} = req.query
+  if (!limit) limit = 10
+  if(!p) p = 1
 
   selectArticleByID(article_id)
     .then(() => {
-      return selectCommentsByArticleID(article_id);
+      return selectCommentsByArticleID(article_id, limit, p);
     })
     .then((comments) => {
       res.status(200).send({ comments });

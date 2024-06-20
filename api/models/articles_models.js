@@ -19,30 +19,40 @@ exports.selectArticleByID = (id) => {
   });
 };
 
-exports.selectAllArticles = (topic, sort_by, order) => {
-
+exports.selectAllArticles = (topic, sort_by, order, limit, p, totalCount) => {
   let queryValues = []
   let queryStr = `SELECT a.author, title, a.article_id, topic, a.created_at, a.votes, article_img_url, COUNT(c.comment_id) AS comment_count 
                     FROM articles a
                     LEFT JOIN comments c ON a.article_id = c.article_id`
+
   if (topic) {
     queryStr += ` WHERE topic = %L`
     queryValues.push(topic)
   }
+  
   queryStr += ` GROUP BY a.article_id`
+
   if (sort_by === "comment_count") {
-    queryStr +=  ` ORDER BY %I %s;`;
+    queryStr +=  ` ORDER BY %I %s`;
   } else {
-    queryStr +=  ` ORDER BY a.%I %s;`;
+    queryStr +=  ` ORDER BY a.%I %s`;
   }
   queryValues.push(sort_by)
   queryValues.push(order)
 
+  if (Number(limit) && Number(p)) {
+    queryStr += ` LIMIT %s OFFSET %s`
+    queryValues.push(limit)
+    queryValues.push((p-1) * limit)
+  } else if (limit == null) {
+  } else {
+    return Promise.reject({status: 400, msg: "Bad Request"})
+  }
   
-
+  queryStr += `;`
   const finalQuery = format(queryStr, ...queryValues)
   return db.query(finalQuery).then(({ rows }) => {
-    return rows;
+    return {articles: rows, totalCount: totalCount}
   });
 };
 

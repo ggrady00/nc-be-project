@@ -16,23 +16,26 @@ exports.getArticleByID = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  let {topic, sort_by, order} = req.query;
+  let {topic, sort_by, order, limit, p} = req.query;
 
   if (!sort_by) sort_by = "created_at"
   if (!order) order = "desc"
+  if (!limit) limit = 10
+  if (!p) p = 1
 
-  const promises = [checkQueries(sort_by, order)]
+  const promises = [checkQueries(sort_by, order), selectAllArticles(topic, sort_by, order, null, p)]
 
   if (topic) {
     promises.push(chechExists("topics", "slug", topic))
   }
   
   Promise.all(promises)
-  .then(()=>{
-    return selectAllArticles(topic, sort_by, order)
+  .then((data)=>{
+    const totalCount = data[1].articles.length
+    return selectAllArticles(topic, sort_by, order, limit, p, totalCount)
   })
   .then((articles)=>{
-    res.status(200).send({ articles });
+    res.status(200).send(articles);
   })
   .catch(next)
 };

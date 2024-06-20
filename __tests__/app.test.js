@@ -121,7 +121,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
       });
   });
   test("200: returned articles should have correct properties", () => {
@@ -155,7 +155,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles).toHaveLength(12);
         articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -645,6 +644,110 @@ describe("POST /api/articles", ()=>{
     .expect(404)
     .then(({body}) => {
       expect(body.msg).toBe("Resource not Found")
+    })
+  })
+})
+
+describe("GET /api/articles (pagination)",()=>{
+  test("200: accepts limit query",()=>{
+    return request(app)
+    .get("/api/articles?limit=5")
+    .expect(200)
+    .then(({body: {articles}}) => {
+      expect(articles).toHaveLength(5)
+    })
+  })
+  test("200: limit defaults to 10", ()=>{
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({body: {articles}}) => {
+      expect(articles).toHaveLength(10)
+    })
+  })
+  test("200: accepts p query and returns that page" ,() => {
+    return request(app)
+    .get("/api/articles?limit=5&p=2&sort_by=article_id&order=asc")
+    .expect(200)
+    .then(({body: {articles}}) => {
+      expect(articles).toHaveLength(5)
+      expect(articles[0].article_id).toBe(6)
+      expect(articles[4].article_id).toBe(10)
+    })
+  })
+  test("200: returns total count property", ()=>{
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({body: {totalCount}}) => {
+      expect(totalCount).toBe(13)
+    })
+  })
+  test("200: returns total count property when given a topic", ()=>{
+    return request(app)
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then(({body: {totalCount}}) => {
+      expect(totalCount).toBe(12)
+    })
+  })
+  test("400: responds with correct error when given invalid limit", ()=>{
+    return request(app)
+    .get("/api/articles?limit=banana")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+  test("400: responds with correct error when given invalid page", ()=>{
+    return request(app)
+    .get("/api/articles?p=banana")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+})
+
+describe.only("GET /api/articles/:article_id/comments (pagination)", ()=>{
+  test("200: accepts limit query", ()=>{
+    return request(app)
+    .get("/api/articles/1/comments?limit=5")
+    .expect(200)
+    .then(({body: {comments}}) => {
+      expect(comments).toHaveLength(5)
+    })
+  })
+  test("200: limit query defualts to 10", ()=>{
+    return request(app)
+    .get("/api/articles/1/comments")
+    .expect(200)
+    .then(({body: {comments}}) => {
+      expect(comments).toHaveLength(10)
+    })
+  })
+  test("200: accepts page query", ()=>{
+    return request(app)
+    .get("/api/articles/1/comments?limit=4&p=3")
+    .expect(200)
+    .then(({body: {comments}}) => {
+      expect(comments).toHaveLength(3)
+    })
+  })
+  test("400: responds with correct error when given invalid limit", ()=>{
+    return request(app)
+    .get("/api/articles/1/comments?limit=banana")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+  test("400: responds with correct error when given invalid page", ()=>{
+    return request(app)
+    .get("/api/articles/1/comments?p=banana")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
     })
   })
 })
