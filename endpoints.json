@@ -194,5 +194,11 @@
         "description": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes a article by article id",
+    "queries": [],
+    "exampleRequestBody": {},
+    "exampleResponse": {}
   }
 }
