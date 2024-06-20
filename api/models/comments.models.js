@@ -9,7 +9,6 @@ exports.selectCommentsByArticleID = (id, limit, p) => {
                       OFFSET $3;`
     return db.query(queryStr, [id, limit, ((p-1)*limit)])
     .then(({rows}) => {
-        console.log(rows)
         return rows
     })
 }

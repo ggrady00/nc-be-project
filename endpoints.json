@@ -180,5 +180,19 @@
         "comment_count": 0
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "inserts a single topic into database and responds with new topic",
+    "queries": [],
+    "exampleRequestBody": {
+      "slug": "new topic",
+      "description": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "new topic",
+        "description": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
+      }
+    }
   }
 }

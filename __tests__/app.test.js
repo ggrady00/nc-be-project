@@ -709,7 +709,7 @@ describe("GET /api/articles (pagination)",()=>{
   })
 })
 
-describe.only("GET /api/articles/:article_id/comments (pagination)", ()=>{
+describe("GET /api/articles/:article_id/comments (pagination)", ()=>{
   test("200: accepts limit query", ()=>{
     return request(app)
     .get("/api/articles/1/comments?limit=5")
@@ -748,6 +748,41 @@ describe.only("GET /api/articles/:article_id/comments (pagination)", ()=>{
     .expect(400)
     .then(({body}) => {
       expect(body.msg).toBe("Bad Request")
+    })
+  })
+})
+
+describe.only("POST /api/topics", ()=>{
+  test("200: adds a new topic to db and responds with newly added topic", ()=>{
+    const newTopic = {
+      "slug": "new topic",
+      "description": "this is my new topic"
+    }
+    return request(app)
+    .post("/api/topics")
+    .send(newTopic)
+    .expect(201)
+    .then(({body: {topic}})=>{
+      expect(topic).toEqual(newTopic)
+    })
+  })
+  test("400: responds with correct error when body missing elements", ()=>{
+    return request(app)
+    .post("/api/topics")
+    .send({"slug": "new topic"})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+  test("409: responds with correct error when attempting to post a duplicate topic", ()=>{
+    return request(app)
+    .post("/api/topics")
+    .send({description: 'Not dogs',slug: 'cats'
+    })
+    .expect(409)
+    .then(({body}) => {
+      expect(body.msg).toBe("Already Exists")
     })
   })
 })

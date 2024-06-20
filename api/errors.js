@@ -18,12 +18,14 @@ exports.handlePsqlErrors = (err, req, res, next) => {
         res.status(400).send({msg: "Bad Request"})
     } else if (err.code == "23503"){
         res.status(404).send({msg: "Resource not Found"})
+    } else if (err.code == "23505") {
+        res.status(409).send({msg: "Already Exists"})
     } else {
         next(err)
     }
 }
 
 exports.handleServerErrors = (err, req, res, next) => {
-    console.log(err)
+    // console.log(err)
     res.status(500).send({msg: "Internal Server Error"})
 }
