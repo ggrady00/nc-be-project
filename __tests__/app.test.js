@@ -237,7 +237,7 @@ describe("GET /api/articles/:articled_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments).toHaveLength(11);
+        expect(comments).toHaveLength(10);
         comments.forEach((comment) => {
           expect(comment).toHaveProperty("comment_id");
           expect(comment).toHaveProperty("votes");
@@ -752,7 +752,7 @@ describe("GET /api/articles/:article_id/comments (pagination)", ()=>{
   })
 })
 
-describe.only("POST /api/topics", ()=>{
+describe("POST /api/topics", ()=>{
   test("200: adds a new topic to db and responds with newly added topic", ()=>{
     const newTopic = {
       "slug": "new topic",
@@ -783,6 +783,36 @@ describe.only("POST /api/topics", ()=>{
     .expect(409)
     .then(({body}) => {
       expect(body.msg).toBe("Already Exists")
+    })
+  })
+})
+
+describe("DELETE /api/articles/:article_id", ()=>{
+  test("204: deletes an article by id and all comments associated", ()=>{
+    return request(app)
+    .delete("/api/articles/1")
+    .expect(204)
+    .then(()=>{
+      return request(app).get("/api/articles/1/comments").expect(404)
+    })
+    .then(()=>{
+      return request(app).get("/api/articles/1").expect(404)
+    })
+  })
+  test("400: responds with correct error when invalid article_id", ()=>{
+    return request(app)
+    .delete("/api/articles/banana")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad Request")
+    })
+  })
+  test("404: responds with correct error when non existent article_id", ()=>{
+    return request(app)
+    .delete("/api/articles/999")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Article not Found")
     })
   })
 })

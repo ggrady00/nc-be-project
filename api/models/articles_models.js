@@ -82,3 +82,18 @@ exports.insertArticle = (article) => {
     return this.selectArticleByID(article.article_id)
   })
 }
+
+exports.removeArticleByID = (id) => {
+  const articleQueryStr = `DELETE from articles
+                           WHERE article_id = $1`
+                    
+  const commentQueryStr = `DELETE from comments
+                           WHERE article_id = $1`
+
+  return db.query(commentQueryStr, [id])
+  .then(()=>{
+    return db.query(articleQueryStr, [id])
+  })
+  
+  
+}

@@ -3,6 +3,7 @@ const {
   selectAllArticles,
   updateArticleByID,
   insertArticle,
+  removeArticleByID,
 } = require("../models/articles_models");
 const { chechExists, checkQueries } = require("../utils");
 
@@ -62,6 +63,19 @@ exports.postArticle = (req, res, next) => {
   insertArticle(body)
   .then((article)=>{
     res.status(201).send({article})
+  })
+  .catch(next)
+}
+
+exports.deleteArticleById = (req, res, next) => {
+  const {article_id} = req.params
+  selectArticleByID(article_id)
+  .then(()=>{
+    return removeArticleByID(article_id)
+
+  })
+  .then(()=>{
+    res.status(204).send()
   })
   .catch(next)
 }
